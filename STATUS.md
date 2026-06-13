@@ -14,13 +14,13 @@ is CPU-only and runs and gate-passes here.
 
 | Stage | What | Implemented | Gate | Verified where | Notes |
 |------:|------|:-----------:|:----:|----------------|-------|
-| 1 | Spec compiler | ⬜ | ⬜ | — | M2 |
+| 1 | Spec compiler | ✅ | ✅ | Windows | rule-based + schema-validated; LLM seam noted |
 | 2 | Concept image (FLUX) | ⬜ | ⬜ | — | M4, AMD-only, optional |
-| 3 | Mesh gen | ⬜ | ⬜ | — | procedural fallback (M2) + TRELLIS.2 (M4, AMD-only) |
+| 3 | Mesh gen | ✅ | ✅ | Windows | 🟠 procedural fallback tier (real, gate-passing); TRELLIS.2 = M4 AMD-only |
 | 4 | Finishing (retopo/decimate/UV/bake) | ⬜ | ⬜ | — | M4; Blender bake AMD-or-CPU |
-| 5 | Rigging (template fit) | ⬜ | ⬜ | — | M2 |
-| 6 | Procedural animation + planted-foot solver | ⬜ | ⬜ | — | M2 |
-| 7 | Packaging (GLB + 2 sidecars) | ⬜ | ⬜ | — | M2 |
+| 5 | Rigging (template fit) | ✅ | ✅ | Windows | arachnid template, rigid skin, 22 joints |
+| 6 | Procedural animation + planted-foot solver | ✅ | ✅ | Windows | alt-tetrapod gait + solver; foot 3.28mm, pen -4.6mm |
+| 7 | Packaging (GLB + 2 sidecars) | ✅ | ✅ | Windows | byte-deterministic GLB; Khronos 0/0/0/0 |
 | 8 | Validation + speed write-back | ✅ | ✅ | Windows (CPU) | independent reader; 10 checks; Khronos 0/0/0/0 on fixture |
 
 ## Milestones
@@ -30,7 +30,7 @@ is CPU-only and runs and gate-passes here.
 | 0 | Scaffold + contracts | ✅ gate-passing | `make verify` validates schemas |
 | 0.5 | Hardware preflight (ROCm/gfx1151) | ⬜ | AMD-only; honest skip on Windows |
 | 1 | Validator first | ✅ gate-passing | PASS good fixture, FAIL broken fixture (foot 6cm through floor) |
-| 2 | Spider end-to-end (procedural Stage 3) | ⬜ | all 10 checks green; deterministic; QA sheet |
+| 2 | Spider end-to-end (procedural Stage 3) | ✅ gate-passing | 10/10 checks; byte-deterministic; QA sheet rendered |
 | 3 | Godot integration layer | ⬜ | parse/lint; **in-engine = human-verified** |
 | 4 | TRELLIS.2 + Stages 2 & 4 | ⬜ | AMD-only; procedural fallback acceptable here |
 | 5 | Orchestrator (cache + iteration loop) | ⬜ | cold run validates, warm run cached, retry loop logs |
