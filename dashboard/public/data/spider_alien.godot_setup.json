@@ -1,0 +1,448 @@
+{
+  "contract_version": "0.1",
+  "model_file": "spider_alien.glb",
+  "display_name": "Venomous Spider Alien",
+  "scale": 1.0,
+  "forward": "-Z",
+  "health": 22,
+  "collision": {
+    "type": "capsule",
+    "radius": 0.34,
+    "height": 0.62,
+    "offset": [
+      0,
+      0.26,
+      0.04
+    ]
+  },
+  "hurtbox": {
+    "type": "capsule",
+    "radius": 0.3,
+    "height": 0.55,
+    "offset": [
+      0,
+      0.26,
+      0.04
+    ]
+  },
+  "locomotion": {
+    "in_place": true,
+    "walk": {
+      "anim": "walk-loop",
+      "speed_mps": 0.216
+    },
+    "run": {
+      "anim": "run-loop",
+      "speed_mps": 0.532
+    },
+    "turn_speed_dps": 300
+  },
+  "animations": [
+    {
+      "name": "idle-loop",
+      "loop": true,
+      "role": "idle"
+    },
+    {
+      "name": "walk-loop",
+      "loop": true,
+      "role": "locomotion"
+    },
+    {
+      "name": "run-loop",
+      "loop": true,
+      "role": "locomotion"
+    },
+    {
+      "name": "attack_01",
+      "loop": false,
+      "role": "attack",
+      "events": [
+        {
+          "t": 0.28,
+          "type": "hitbox_on",
+          "hitbox": "front_slam"
+        },
+        {
+          "t": 0.46,
+          "type": "hitbox_off",
+          "hitbox": "front_slam"
+        }
+      ]
+    },
+    {
+      "name": "attack_02",
+      "loop": false,
+      "role": "attack",
+      "events": [
+        {
+          "t": 0.2,
+          "type": "hitbox_on",
+          "hitbox": "fangs"
+        },
+        {
+          "t": 0.38,
+          "type": "hitbox_off",
+          "hitbox": "fangs"
+        }
+      ]
+    },
+    {
+      "name": "hit",
+      "loop": false,
+      "role": "hit_react"
+    },
+    {
+      "name": "death",
+      "loop": false,
+      "role": "death"
+    }
+  ],
+  "hitboxes": [
+    {
+      "id": "front_slam",
+      "bone": "head",
+      "shape": "sphere",
+      "radius": 0.16,
+      "offset": [
+        0,
+        -0.04,
+        -0.14
+      ],
+      "damage": 6,
+      "tags": [
+        "blunt",
+        "light"
+      ]
+    },
+    {
+      "id": "fangs",
+      "bone": "head",
+      "shape": "sphere",
+      "radius": 0.11,
+      "offset": [
+        0,
+        -0.09,
+        -0.2
+      ],
+      "damage": 9,
+      "tags": [
+        "pierce",
+        "venom"
+      ]
+    }
+  ],
+  "state_machine": {
+    "start": "idle",
+    "states": {
+      "idle": {
+        "anim": "idle-loop"
+      },
+      "walk": {
+        "anim": "walk-loop"
+      },
+      "run": {
+        "anim": "run-loop"
+      },
+      "attack_01": {
+        "anim": "attack_01"
+      },
+      "attack_02": {
+        "anim": "attack_02"
+      },
+      "hit": {
+        "anim": "hit"
+      },
+      "death": {
+        "anim": "death"
+      }
+    },
+    "transitions": [
+      [
+        "idle",
+        "walk",
+        0.15
+      ],
+      [
+        "walk",
+        "idle",
+        0.15
+      ],
+      [
+        "walk",
+        "run",
+        0.12
+      ],
+      [
+        "run",
+        "walk",
+        0.12
+      ],
+      [
+        "idle",
+        "attack_01",
+        0.06
+      ],
+      [
+        "attack_01",
+        "idle",
+        0.18
+      ],
+      [
+        "idle",
+        "attack_02",
+        0.06
+      ],
+      [
+        "attack_02",
+        "idle",
+        0.18
+      ],
+      [
+        "idle",
+        "hit",
+        0.04
+      ],
+      [
+        "hit",
+        "idle",
+        0.15
+      ],
+      [
+        "walk",
+        "hit",
+        0.04
+      ],
+      [
+        "run",
+        "hit",
+        0.04
+      ],
+      [
+        "idle",
+        "death",
+        0.05
+      ],
+      [
+        "walk",
+        "death",
+        0.05
+      ],
+      [
+        "run",
+        "death",
+        0.05
+      ],
+      [
+        "hit",
+        "death",
+        0.05
+      ]
+    ],
+    "note": "AnimationNodeStateMachine.travel() pathfinds these edges; death is terminal."
+  },
+  "foot_anchors": {
+    "tib_l1": [
+      0.46,
+      0.0,
+      -0.276
+    ],
+    "tib_r1": [
+      -0.46,
+      0.0,
+      -0.276
+    ],
+    "tib_l2": [
+      0.46,
+      0.0,
+      -0.097
+    ],
+    "tib_r2": [
+      -0.46,
+      0.0,
+      -0.097
+    ],
+    "tib_l3": [
+      0.46,
+      0.0,
+      0.082
+    ],
+    "tib_r3": [
+      -0.46,
+      0.0,
+      0.082
+    ],
+    "tib_l4": [
+      0.46,
+      0.0,
+      0.261
+    ],
+    "tib_r4": [
+      -0.46,
+      0.0,
+      0.261
+    ]
+  },
+  "skeleton": {
+    "names": [
+      "root",
+      "body",
+      "abdomen",
+      "head",
+      "fang_l",
+      "fang_r",
+      "hip_l1",
+      "tib_l1",
+      "hip_r1",
+      "tib_r1",
+      "hip_l2",
+      "tib_l2",
+      "hip_r2",
+      "tib_r2",
+      "hip_l3",
+      "tib_l3",
+      "hip_r3",
+      "tib_r3",
+      "hip_l4",
+      "tib_l4",
+      "hip_r4",
+      "tib_r4"
+    ],
+    "parents": [
+      -1,
+      0,
+      1,
+      1,
+      3,
+      3,
+      1,
+      6,
+      1,
+      8,
+      1,
+      10,
+      1,
+      12,
+      1,
+      14,
+      1,
+      16,
+      1,
+      18,
+      1,
+      20
+    ],
+    "rest_world": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.21,
+        -0.02
+      ],
+      [
+        0.0,
+        0.25,
+        0.2
+      ],
+      [
+        0.0,
+        0.2,
+        -0.22
+      ],
+      [
+        0.035,
+        0.155,
+        -0.285
+      ],
+      [
+        -0.035,
+        0.155,
+        -0.285
+      ],
+      [
+        0.125,
+        0.205,
+        -0.15
+      ],
+      [
+        0.335,
+        0.355,
+        -0.21
+      ],
+      [
+        -0.125,
+        0.205,
+        -0.15
+      ],
+      [
+        -0.335,
+        0.355,
+        -0.21
+      ],
+      [
+        0.125,
+        0.205,
+        -0.055
+      ],
+      [
+        0.335,
+        0.355,
+        -0.075
+      ],
+      [
+        -0.125,
+        0.205,
+        -0.055
+      ],
+      [
+        -0.335,
+        0.355,
+        -0.075
+      ],
+      [
+        0.125,
+        0.205,
+        0.04
+      ],
+      [
+        0.335,
+        0.355,
+        0.06
+      ],
+      [
+        -0.125,
+        0.205,
+        0.04
+      ],
+      [
+        -0.335,
+        0.355,
+        0.06
+      ],
+      [
+        0.125,
+        0.205,
+        0.135
+      ],
+      [
+        0.335,
+        0.355,
+        0.195
+      ],
+      [
+        -0.125,
+        0.205,
+        0.135
+      ],
+      [
+        -0.335,
+        0.355,
+        0.195
+      ]
+    ]
+  }
+}

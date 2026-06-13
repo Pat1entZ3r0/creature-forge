@@ -1,0 +1,30 @@
+{
+  "spec_version": "0.1",
+  "prompt": "small venomous spider alien, low-poly PS1 horror style",
+  "style": "low_poly_ps1_horror",
+  "archetype": "arachnid",
+  "seed": 1337,
+  "units": "m",
+  "up": "+Y",
+  "forward": "-Z",
+  "target_height_m": 0.36,
+  "tri_budget": 1800,
+  "vert_budget": 3600,
+  "texture_budget_px": 256,
+  "material_model": "vertex-color",
+  "palette": "muted_green_purple",
+  "limbs": 8,
+  "locomotion": {
+    "in_place": true
+  },
+  "animations": [
+    "idle-loop",
+    "walk-loop",
+    "run-loop",
+    "attack_01",
+    "attack_02",
+    "hit",
+    "death"
+  ],
+  "export": "glb"
+}

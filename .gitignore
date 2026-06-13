@@ -17,6 +17,7 @@ out/.cache/
 node_modules/
 **/node_modules/
 dashboard/dist/
+*.tsbuildinfo
 
 # editor / os
 .DS_Store

@@ -1,0 +1,24 @@
+{
+  "prompt": "small venomous spider alien, low-poly PS1 horror style",
+  "archetype": "arachnid",
+  "mesh_tier_requested": "procedural",
+  "model_versions": {
+    "pipeline": "0.1.0",
+    "mesh_tier": "procedural"
+  },
+  "attempts": [
+    {
+      "attempt": 0,
+      "seed": 1337,
+      "cache_key": "858418ab08a39ee6",
+      "mesh_tier_used": "procedural",
+      "cache_hit": false,
+      "overall_pass": true,
+      "failing": [],
+      "seconds": 1.9707
+    }
+  ],
+  "success": true,
+  "total_seconds": 1.9736,
+  "diagnosis": null
+}

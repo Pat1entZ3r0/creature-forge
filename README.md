@@ -44,6 +44,14 @@ python -m venv .venv; .\.venv\Scripts\python -m pip install -e ".[dev,qa]"
 `make`/`make.ps1` both delegate to `tasks.py`, so the gate is identical on every
 platform.
 
+A local **run dashboard** (`dashboard/`) visualizes a run — the live GLB, the
+10-check validation ledger, measured speeds, the run manifest, and the QA contact
+sheet:
+
+```bash
+cd dashboard && npm install && npm run dev   # http://localhost:5173
+```
+
 ## Layout
 
 ```
@@ -72,6 +80,15 @@ Conventions (enforced by the validator): meters, +Y up, −Z forward, glTF
 quaternions, identity-bind translation-only bones, rigid skinning for PS1,
 in-place locomotion with measured speeds written back by Stage 8.
 
-Licenses are verified in [`docs/LICENSES.md`](docs/LICENSES.md); the architecture
-critique that motivated this design is in
-[`docs/IMPROVED_PIPELINE.md`](docs/IMPROVED_PIPELINE.md).
+## Docs
+
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — per-stage I/O contracts, the 10
+  validator checks, conventions, and how to add an archetype.
+- [`docs/HARDWARE.md`](docs/HARDWARE.md) — the gfx1151 ROCm bring-up and the
+  preflight.
+- [`docs/LICENSES.md`](docs/LICENSES.md) — verified license table.
+- [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) — honest limitations.
+- [`docs/IMPROVED_PIPELINE.md`](docs/IMPROVED_PIPELINE.md) — the architecture
+  critique that motivated this design.
+- [`STATUS.md`](STATUS.md) — per-stage / per-milestone state (automated-verified vs
+  human-verified vs AMD-only/fallback).
