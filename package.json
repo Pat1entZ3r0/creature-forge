@@ -1,0 +1,13 @@
+{
+  "name": "creature-forge-tools",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Node tooling for creature-forge: the Khronos glTF conformance check.",
+  "scripts": {
+    "khronos": "node validation/khronos.mjs"
+  },
+  "dependencies": {
+    "gltf-validator": "^2.0.0-dev.3.10"
+  }
+}

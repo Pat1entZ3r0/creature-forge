@@ -21,7 +21,7 @@ is CPU-only and runs and gate-passes here.
 | 5 | Rigging (template fit) | ⬜ | ⬜ | — | M2 |
 | 6 | Procedural animation + planted-foot solver | ⬜ | ⬜ | — | M2 |
 | 7 | Packaging (GLB + 2 sidecars) | ⬜ | ⬜ | — | M2 |
-| 8 | Validation + speed write-back | ⬜ | ⬜ | — | M1 (built first) |
+| 8 | Validation + speed write-back | ✅ | ✅ | Windows (CPU) | independent reader; 10 checks; Khronos 0/0/0/0 on fixture |
 
 ## Milestones
 
@@ -29,7 +29,7 @@ is CPU-only and runs and gate-passes here.
 |--:|-----------|:-----:|------|
 | 0 | Scaffold + contracts | ✅ gate-passing | `make verify` validates schemas |
 | 0.5 | Hardware preflight (ROCm/gfx1151) | ⬜ | AMD-only; honest skip on Windows |
-| 1 | Validator first | ⬜ | PASS good fixture, FAIL broken fixture |
+| 1 | Validator first | ✅ gate-passing | PASS good fixture, FAIL broken fixture (foot 6cm through floor) |
 | 2 | Spider end-to-end (procedural Stage 3) | ⬜ | all 10 checks green; deterministic; QA sheet |
 | 3 | Godot integration layer | ⬜ | parse/lint; **in-engine = human-verified** |
 | 4 | TRELLIS.2 + Stages 2 & 4 | ⬜ | AMD-only; procedural fallback acceptable here |
