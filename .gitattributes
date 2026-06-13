@@ -1,0 +1,5 @@
+# Normalize line endings; keep LF in the repo so the Makefile and shell/Python
+# scripts work on the Linux/AMD target regardless of the authoring OS.
+* text=auto eol=lf
+*.png binary
+*.glb binary
