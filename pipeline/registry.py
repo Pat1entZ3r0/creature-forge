@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 from archetypes.arachnid import Arachnid
+from archetypes.quadruped import Quadruped
 
 ARCHETYPES = {
     "arachnid": Arachnid,
+    "quadruped": Quadruped,
 }
 
 
