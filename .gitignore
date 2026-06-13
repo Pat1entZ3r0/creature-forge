@@ -1,0 +1,26 @@
+# dependencies
+node_modules/
+**/node_modules/
+
+# build output
+web/dist/
+dist/
+
+# python
+__pycache__/
+*.pyc
+out/
+
+# editor / os
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# logs
+*.log
+npm-debug.log*
+
+# misc
+web/smoke*.png
+web/smoke.mjs

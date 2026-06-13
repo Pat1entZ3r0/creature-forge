@@ -1,0 +1,83 @@
+{
+  "file": "spider_alien.glb",
+  "checks": {
+    "tri_budget": {
+      "limit": 1800,
+      "used": 288,
+      "pass": true
+    },
+    "weights_normalized": {
+      "max_err": 0.0,
+      "pass": true
+    },
+    "max_influences": {
+      "value": 1,
+      "limit": 4,
+      "pass": true
+    },
+    "loop_closure": {
+      "max_abs_first_last_delta": {
+        "idle-loop": 0.0,
+        "walk-loop": 0.0,
+        "run-loop": 0.0
+      },
+      "pass": true
+    },
+    "bone_containment": {
+      "inside": 21,
+      "required": 21,
+      "exempt_structural": [
+        "root"
+      ],
+      "pass": true
+    },
+    "foot_contact": {
+      "worst_dev_mm": 3.28,
+      "limit_mm": 8.0,
+      "pass": true
+    },
+    "in_place": {
+      "pass": true
+    },
+    "death_collapses": {
+      "final_body_max_y": 0.252,
+      "pass": true
+    },
+    "ground_penetration": {
+      "worst_m": -0.0044,
+      "limit_m": -0.005,
+      "pass": true
+    },
+    "khronos_gltf_conformance": {
+      "validator": "2.0.0-dev.3.10",
+      "errors": 0,
+      "warnings": 0,
+      "infos": 0,
+      "hints": 0,
+      "pass": true
+    }
+  },
+  "metrics": {
+    "triangles": 288,
+    "vertices": 576,
+    "joints": 22,
+    "locomotion": {
+      "walk-loop": {
+        "cycle_s": 0.7200000286102295,
+        "stance_foot_dev_mm": 3.28,
+        "mean_stride_m": 0.1553,
+        "recommended_speed_mps": 0.216,
+        "in_place_drift_m": 0.0
+      },
+      "run-loop": {
+        "cycle_s": 0.4000000059604645,
+        "stance_foot_dev_mm": 0.95,
+        "mean_stride_m": 0.2128,
+        "recommended_speed_mps": 0.532,
+        "in_place_drift_m": 0.0
+      }
+    }
+  },
+  "warnings": [],
+  "overall_pass": true
+}
