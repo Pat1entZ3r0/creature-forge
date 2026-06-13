@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://creature-forge/schemas/godot_setup.schema.json",
+  "title": "godot_setup",
+  "description": "Stage-7 engine contract: everything Godot needs, nothing it must guess.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "model_file",
+    "display_name",
+    "scale",
+    "forward",
+    "health",
+    "collision",
+    "hurtbox",
+    "locomotion",
+    "animations",
+    "hitboxes",
+    "state_machine",
+    "foot_anchors",
+    "skeleton"
+  ],
+  "properties": {
+    "contract_version": { "type": "string" },
+    "model_file": { "type": "string" },
+    "display_name": { "type": "string" },
+    "scale": { "type": "number", "exclusiveMinimum": 0 },
+    "forward": { "const": "-Z" },
+    "health": { "type": "number", "exclusiveMinimum": 0 },
+    "collision": { "$ref": "#/$defs/capsule" },
+    "hurtbox": { "$ref": "#/$defs/capsule" },
+    "locomotion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["in_place", "walk", "run", "turn_speed_dps"],
+      "properties": {
+        "in_place": { "const": true },
+        "walk": { "$ref": "#/$defs/gait" },
+        "run": { "$ref": "#/$defs/gait" },
+        "turn_speed_dps": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "animations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "loop", "role"],
+        "properties": {
+          "name": { "type": "string" },
+          "loop": { "type": "boolean" },
+          "role": { "type": "string" },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["t", "type", "hitbox"],
+              "properties": {
+                "t": { "type": "number", "minimum": 0 },
+                "type": { "type": "string", "enum": ["hitbox_on", "hitbox_off"] },
+                "hitbox": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "hitboxes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "bone", "shape", "radius", "offset", "damage", "tags"],
+        "properties": {
+          "id": { "type": "string" },
+          "bone": { "type": "string" },
+          "shape": { "type": "string", "enum": ["sphere", "capsule", "box"] },
+          "radius": { "type": "number", "exclusiveMinimum": 0 },
+          "offset": { "$ref": "#/$defs/vec3" },
+          "damage": { "type": "number", "minimum": 0 },
+          "tags": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "state_machine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "states", "transitions"],
+      "properties": {
+        "start": { "type": "string" },
+        "states": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["anim"],
+            "properties": { "anim": { "type": "string" } }
+          }
+        },
+        "transitions": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "prefixItems": [
+              { "type": "string" },
+              { "type": "string" },
+              { "type": "number", "minimum": 0 }
+            ],
+            "minItems": 3,
+            "maxItems": 3
+          }
+        },
+        "note": { "type": "string" }
+      }
+    },
+    "foot_anchors": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/vec3" }
+    },
+    "skeleton": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["names", "parents"],
+      "properties": {
+        "names": { "type": "array", "items": { "type": "string" } },
+        "parents": { "type": "array", "items": { "type": "integer", "minimum": -1 } },
+        "rest_world": { "type": "array", "items": { "$ref": "#/$defs/vec3" } }
+      }
+    }
+  },
+  "$defs": {
+    "vec3": {
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "capsule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "radius", "height", "offset"],
+      "properties": {
+        "type": { "const": "capsule" },
+        "radius": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 },
+        "offset": { "$ref": "#/$defs/vec3" }
+      }
+    },
+    "gait": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["anim", "speed_mps"],
+      "properties": {
+        "anim": { "type": "string" },
+        "speed_mps": { "type": "number", "minimum": 0 }
+      }
+    }
+  }
+}

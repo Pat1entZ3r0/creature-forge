@@ -1,0 +1,32 @@
+# creature-forge pipeline configuration.
+# Seeds and model versions live here so runs are reproducible and auditable.
+
+[run]
+default_prompt = "small venomous spider alien, low-poly PS1 horror style"
+default_archetype = "arachnid"
+default_seed = 1337
+mesh_tier = "auto"            # auto | procedural | trellis
+iteration_retries = 3         # gate-fail -> perturb seed and regenerate, up to N
+
+[determinism]
+# Identical (spec + seed + model_version) must produce a byte-stable GLB.
+byte_stable = true
+float_format = "float32"
+
+[paths]
+out_dir = "out"
+cache_dir = "out/.cache"
+
+[models]
+# Pinned versions/commits for the GPU stages (Milestone 4, AMD target only).
+# CPU stages (1, 4-retopo, 5, 6, 7, 8) use no models and are version-free.
+trellis2 = { repo = "microsoft/TRELLIS", rev = "main", license = "MIT", fork_amd = "Lamothe/TRELLIS.2_rocm" }
+flux_schnell = { repo = "black-forest-labs/FLUX.1-schnell", rev = "main", license = "Apache-2.0" }
+unirig = { repo = "VAST-AI-Research/UniRig", rev = "main", license = "MIT" }
+kimodo = { repo = "nv-tlabs/Kimodo", rev = "main", license = "Apache-2.0", note = "humanoid only" }
+
+[gpu]
+# gfx1151 reality — see docs/HARDWARE.md. flash-attn/bitsandbytes/torchao unavailable.
+target_arch = "gfx1151"
+torch_index_url = "https://rocm.nightlies.amd.com/v2/gfx1151/"
+attention_backend = "xformers"

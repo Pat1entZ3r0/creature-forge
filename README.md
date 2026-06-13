@@ -1,76 +1,77 @@
 # creature-forge
 
-**An AI pipeline that compiles a sentence into a rigged, animated, validated,
-Godot-ready game enemy — and an interactive web showcase that proves it.**
+A free/open-source, **deterministic, validation-gated** pipeline that turns one
+natural-language prompt — *"small venomous spider alien, low-poly PS1 horror
+style"* — into a **Godot-ready game enemy**: a rigged, skinned, animated GLB plus
+two sidecar JSON contracts, wired into a playable Godot 4.3+ scene with an
+`AnimationTree` state machine, collision/hurt volumes, and event-timed attack
+hitboxes.
 
-> Test prompt: *"small venomous spider alien, low-poly PS1 horror style, fast
-> skittering movement, multiple attacks, death animation."*
+It is built in milestones, each with an explicit acceptance gate. A passing gate
+means the check ran and returned green — never an asserted success. See
+[`STATUS.md`](STATUS.md) for the honest, per-stage state.
 
-The pipeline turns that prompt into `spider_alien.glb`: 288 triangles, 22 joints,
-7 animation clips, passing the official Khronos glTF validator at **0/0/0/0** and a
-ten-check semantic gate at **10/10**. The showcase loads that exact GLB in your
-browser, renders it through a custom PS1 shader, and walks through the eight-stage
-architecture and the closed validation loop that makes the result trustworthy.
+## Dual-target reality
 
-![Hero](docs/preview/hero.png)
-![Live specimen viewer](docs/preview/specimen.png)
+The pipeline is designed for an **AMD Ryzen AI Max+ 395 "Strix Halo"** box
+(Radeon 8060S iGPU, `gfx1151`, 128 GB unified memory, Ubuntu 24.04, ROCm 7.x).
+But the trustworthy core is hardware-agnostic:
 
----
+- **CPU-only core — Stages 1, 4-retopo, 5, 6, 7, 8** — runs and gate-passes on any
+  machine, including the Windows box this was built on. This is the
+  differentiating, correctness-critical layer, and it carries **no GPU risk**.
+- **GPU stages — 2 (FLUX), 3 (TRELLIS.2)** — need the AMD iGPU + ROCm. They are
+  implemented for that target (see [`docs/HARDWARE.md`](docs/HARDWARE.md)) and
+  fall back to the deterministic **procedural Stage-3 tier** anywhere the GPU
+  stack isn't available. The fallback is real and passes every gate on its own.
 
-## The showcase site (`web/`)
-
-A single-page scrollytelling site — **Vite + React + TypeScript**,
-**react-three-fiber**, and a hand-written PS1 `shaderMaterial` (clip-space vertex
-snapping + Bayer-ordered dither + color-depth reduction). Every statistic on the
-page is imported from the real pipeline artifacts (`*.json`) — no hand-typed
-numbers, honoring the pipeline's own *"the JSON is the single source of truth"*
-principle.
+## Quickstart
 
 ```bash
-cd web
-npm install
-npm run dev        # http://localhost:5173
-npm run build      # type-checked static bundle in web/dist
+# Linux / AMD target
+make setup                       # install the package + dev/qa extras
+make run ARGS='--prompt "small venomous spider alien, low-poly PS1 horror style" --seed 1337'
+make verify                      # schemas + unit tests + the 10-check validator
 ```
 
-Pushing to `main` builds and deploys the site to GitHub Pages via
-`.github/workflows/deploy.yml`.
-
-### Aesthetic
-
-"Specimen under examination" — a dark forensic-lab × PS1-horror direction:
-void-purple ground, a single toxic-green accent pulled from the spider's eyes,
-Syne + Space Mono, scanlines/grain/vignette atmosphere, and a live containment
-viewport with a wireframe HUD.
-
-## The pipeline (`pipeline/`, `godot/`)
-
-The proof-of-concept itself. See [`pipeline/README.md`](pipeline/README.md) for the
-full write-up and [`IMPROVED_PIPELINE.md`](IMPROVED_PIPELINE.md) for the corrected
-eight-stage architecture and the honest critique of the original design.
-
-```
-pipeline/
-  generate_creature.py        # hand-written glTF 2.0 writer — builds the GLB + sidecars
-  validate_asset.py           # the Stage-8 gate: CPU FK + LBS, 10 checks, speed write-back
-  run_khronos_validator.mjs   # official Khronos conformance
-  assets/                     # spider_alien.glb + asset_spec / godot_setup sidecars
-  reports/                    # validation_report.json + khronos_report.json
-godot/                        # Godot 4 integration: factory, controller, post-import, demo
-docs/superpowers/specs/       # the design spec this site was built from
+```powershell
+# Windows (identical gate logic; uses .\.venv if present)
+python -m venv .venv; .\.venv\Scripts\python -m pip install -e ".[dev,qa]"
+.\make.ps1 run --prompt "small venomous spider alien, low-poly PS1 horror style" --seed 1337
+.\make.ps1 verify
 ```
 
-### What's real, what's stubbed
+`make`/`make.ps1` both delegate to `tasks.py`, so the gate is identical on every
+platform.
 
-Stages 1, 5, 6, 7 and 8 are implemented for real. Stage 3 (ML image-to-3D mesh
-generation) runs in its deterministic procedural fallback tier — it produces
-exactly the artifact a real mesh-gen stage would, with the same conventions,
-budgets, and downstream contract, so the rig/animate/package/validate/integrate
-layers it feeds are the real thing. The Godot scripts are carefully written but
-unverified in-engine.
+## Layout
 
-## Credits
+```
+conventions.py     Non-negotiable globals (units, axes, quat order, limits) + math kit.
+schemas/           JSON Schemas for both sidecar contracts + hand-written examples.
+config/            pipeline.toml — seeds, model versions, GPU/ROCm settings.
+archetypes/        Per-archetype skeleton templates + gait graphs (arachnid, quadruped).
+pipeline/          Stages 1-7 as modules (procedural Stage-3 + AMD TRELLIS path).
+validation/        Stage 8: the independent validator (own glTF reader + FK + LBS).
+orchestrator/      CLI, content-hash cache, seed-perturb iteration loop, run manifest.
+godot/             The four Godot 4.3+ GDScript files.
+scripts/           preflight.py — ROCm/gfx1151 hardware bring-up (AMD target).
+dashboard/         Web run-viewer over out/ artifacts.
+tests/             Unit tests. The validator is the integration test.
+out/               Generated artifacts (GLB, sidecars, reports, QA sheet).
+```
 
-Pipeline and assets: the creature-forge proof of concept. Showcase site built with
-the [frontend-design](https://github.com/anthropics/claude-code) taste skill and
-the superpowers brainstorm → spec → plan → build workflow.
+## The contracts
+
+Two sidecars travel with the GLB and are the single source of truth:
+`<model>.asset_spec.json` (what was asked — Stage 1) and
+`<model>.godot_setup.json` (the engine contract — Stage 7). Both are schema-
+validated; their shapes live in [`schemas/`](schemas/).
+
+Conventions (enforced by the validator): meters, +Y up, −Z forward, glTF
+quaternions, identity-bind translation-only bones, rigid skinning for PS1,
+in-place locomotion with measured speeds written back by Stage 8.
+
+Licenses are verified in [`docs/LICENSES.md`](docs/LICENSES.md); the architecture
+critique that motivated this design is in
+[`docs/IMPROVED_PIPELINE.md`](docs/IMPROVED_PIPELINE.md).

@@ -1,26 +1,26 @@
-# dependencies
-node_modules/
-**/node_modules/
-
-# build output
-web/dist/
-dist/
-
 # python
 __pycache__/
 *.pyc
-out/
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+
+# pipeline artifacts (generated; out/.gitkeep is tracked)
+out/*
+!out/.gitkeep
+out/.cache/
+
+# node (dashboard + khronos validator)
+node_modules/
+**/node_modules/
+dashboard/dist/
 
 # editor / os
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
-
-# logs
 *.log
-npm-debug.log*
-
-# misc
-web/smoke*.png
-web/smoke.mjs
