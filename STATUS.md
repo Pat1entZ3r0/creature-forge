@@ -31,7 +31,7 @@ is CPU-only and runs and gate-passes here.
 | 0.5 | Hardware preflight (ROCm/gfx1151) | ⬜ | AMD-only; honest skip on Windows |
 | 1 | Validator first | ✅ gate-passing | PASS good fixture, FAIL broken fixture (foot 6cm through floor) |
 | 2 | Spider end-to-end (procedural Stage 3) | ✅ gate-passing | 10/10 checks; byte-deterministic; QA sheet rendered |
-| 3 | Godot integration layer | ⬜ | parse/lint; **in-engine = human-verified** |
+| 3 | Godot integration layer | ✅ parse/lint · 🟣 in-engine pending | gdparse+gdlint clean; in-engine NOT self-certifiable — awaits a human in Godot 4.3+ |
 | 4 | TRELLIS.2 + Stages 2 & 4 | ⬜ | AMD-only; procedural fallback acceptable here |
 | 5 | Orchestrator (cache + iteration loop) | ⬜ | cold run validates, warm run cached, retry loop logs |
 | 6 | Quadruped archetype + docs | ⬜ | quadruped passes all 10 checks, solver/validator unchanged |

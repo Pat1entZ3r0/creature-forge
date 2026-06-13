@@ -12,7 +12,7 @@ dependencies = [
 [project.optional-dependencies]
 # CPU-only extras used by Stage 6 QA render and tests. No GPU here.
 qa = ["matplotlib>=3.8"]
-dev = ["pytest>=8.0", "matplotlib>=3.8"]
+dev = ["pytest>=8.0", "matplotlib>=3.8", "gdtoolkit>=4.3"]
 # GPU stages (Milestone 4) — installed only on the AMD/ROCm target box.
 # torch comes from the gfx1151 index (see docs/HARDWARE.md), NOT from PyPI.
 gpu = ["diffusers>=0.30", "transformers>=4.44", "trimesh>=4.4"]

@@ -1,0 +1,3 @@
+max-line-length: 120
+max-public-methods: 30
+function-arguments-number: 6

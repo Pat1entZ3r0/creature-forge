@@ -57,6 +57,35 @@ def test() -> int:
     return _run([PY, "-m", "pytest", "-q"])
 
 
+def _gd_tool(name: str) -> str | None:
+    """Locate a gdtoolkit console script next to the active python, else on PATH."""
+    import shutil
+
+    cand = Path(PY).parent / (name + (".exe" if os.name == "nt" else ""))
+    return str(cand) if cand.exists() else shutil.which(name)
+
+
+def godot() -> int:
+    """Parse + lint the GDScript integration layer (gdtoolkit)."""
+    files = sorted((ROOT / "godot").glob("*.gd"))
+    if not files:
+        print("  (no godot scripts)")
+        return 0
+    parse, lint = _gd_tool("gdparse"), _gd_tool("gdlint")
+    if not parse:
+        print("  (gdtoolkit not installed; `pip install -e .[dev]` to enable the GDScript gate)")
+        return 0
+    rc = 0
+    for f in files:
+        if _run([parse, str(f)], stdout=subprocess.DEVNULL):
+            rc = 1
+        else:
+            print(f"  [OK] parse {f.name}")
+    if lint:
+        rc |= _run([lint, *[str(f) for f in files]])
+    return rc
+
+
 def run(argv: list[str]) -> int:
     """Generate an asset: `python tasks.py run --prompt "..." --seed 1337`."""
     return _run([PY, "-m", "orchestrator.cli", "run", *argv])
@@ -70,6 +99,10 @@ def verify() -> int:
         return rc
     _hr("unit tests")
     rc = test()
+    if rc:
+        return rc
+    _hr("godot (parse + lint)")
+    rc = godot()
     if rc:
         return rc
     glb = OUT / "spider_alien.glb"
@@ -98,7 +131,8 @@ def clean() -> int:
     return 0
 
 
-TARGETS = {"setup": setup, "schemas": schemas, "test": test, "verify": verify, "clean": clean}
+TARGETS = {"setup": setup, "schemas": schemas, "test": test, "godot": godot,
+           "verify": verify, "clean": clean}
 
 
 def main(argv: list[str]) -> int:
