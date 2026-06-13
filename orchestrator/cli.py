@@ -1,9 +1,11 @@
 """
 orchestrator/cli.py — `pipeline run`.
 
-Milestone 2 wiring: compile spec -> build (Stages 5/3/6/7) -> validate (Stage 8,
-with measured-speed write-back) -> QA contact sheet. The content-hash cache,
-seed-perturb iteration loop and run manifest are layered on in Milestone 5.
+  pipeline run --prompt "..." --seed 1337 --archetype arachnid --mesh-tier auto
+
+Drives the run engine (orchestrator/pipeline.py): content-hash cache, seed-perturb
+iteration loop on gate failure, and a per-run manifest. mesh-tier `auto` reads
+out/preflight.json — `trellis` only when the GPU preflight is green, else procedural.
 """
 
 from __future__ import annotations
@@ -24,7 +26,6 @@ def _config() -> dict:
 
 
 def _resolve_mesh_tier(requested: str) -> str:
-    """auto -> read out/preflight.json; GPU stages need a green preflight."""
     if requested != "auto":
         return requested
     pf = OUT / "preflight.json"
@@ -38,47 +39,36 @@ def _resolve_mesh_tier(requested: str) -> str:
 
 
 def run(args) -> int:
-    from pipeline.build import build_asset
-    from pipeline.stage1_spec import compile_spec
-    from validation.validator import validate
+    from orchestrator.pipeline import run_pipeline
 
     cfg = _config().get("run", {})
     prompt = args.prompt or cfg.get("default_prompt")
     seed = args.seed if args.seed is not None else cfg.get("default_seed", 1337)
     archetype = args.archetype or cfg.get("default_archetype", "arachnid")
     tier = _resolve_mesh_tier(args.mesh_tier or cfg.get("mesh_tier", "auto"))
+    retries = args.retries if args.retries is not None else cfg.get("iteration_retries", 3)
 
-    print(f"Stage 1: compiling spec  prompt={prompt!r}  seed={seed}  archetype={archetype}")
-    spec = compile_spec(prompt, seed, archetype)
+    print(f"pipeline run  prompt={prompt!r}  seed={seed}  archetype={archetype}  "
+          f"mesh_tier={tier}  retries={retries}")
+    m = run_pipeline(prompt, seed, archetype, mesh_tier=tier, retries=retries,
+                     use_cache=not args.no_cache, khronos=not args.no_khronos,
+                     sheet=not args.no_sheet, fault_inject=args.fault_inject)
 
-    print(f"Stages 3/5/6/7: building asset (mesh_tier={tier}) ...")
-    info = build_asset(spec, OUT, mesh_tier=tier)
-    if info.get("fallback_reason"):
-        print(f"  ! generative tier unavailable -> procedural fallback: {info['fallback_reason']}")
-    print(f"  -> {info['glb'].name}  {info['bytes']} bytes  {info['triangles']} tris  "
-          f"{info['vertices']} verts  {info['joints']} joints  tier={info['mesh_tier']}  "
-          f"clips={info['clips']}")
+    for a in m["attempts"]:
+        tag = ("CACHE HIT" if a.get("cache_hit") else
+               a.get("gate") or ("PASS" if a.get("overall_pass") else "FAIL"))
+        extra = f" failing={a['failing']}" if a.get("failing") else ""
+        if a.get("fallback_reason"):
+            extra += f" (fallback: {a['fallback_reason'].split(' - ')[0]})"
+        print(f"  attempt {a['attempt']}  seed={a['seed']}  {a['seconds']}s  -> {tag}{extra}")
 
-    print("Stage 8: validating + measuring speeds ...")
-    report = validate(info["glb"], write_back=True, khronos=not args.no_khronos)
-    (OUT / "validation_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
-    passed = sum(1 for c in report["checks"].values() if c.get("pass"))
-    print(f"  -> {passed}/{len(report['checks'])} checks, overall_pass={report['overall_pass']}")
-    if report["warnings"]:
-        for w in report["warnings"]:
-            print(f"  ! {w}")
-
-    if not args.no_sheet:
-        try:
-            from validation.contact_sheet import render
-
-            png = render(info["glb"], OUT / "qa_contact_sheet.png")
-            print(f"QA contact sheet: {png.name}")
-        except Exception as e:  # noqa: BLE001
-            print(f"  (contact sheet skipped: {e})")
-
-    print("\nRUN:", "PASS" if report["overall_pass"] else "FAIL")
-    return 0 if report["overall_pass"] else 1
+    print(f"\nmanifest: out/run_manifest.json   total {m['total_seconds']}s")
+    if m["success"]:
+        print("RUN: PASS")
+        return 0
+    print(f"RUN: FAIL - {m['diagnosis']['message']}")
+    print(f"  last failing checks: {list(m['diagnosis']['last_failing_checks'])}")
+    return 1
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -91,8 +81,12 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--archetype")
     r.add_argument("--mesh-tier", dest="mesh_tier", default=None,
                    choices=["auto", "procedural", "trellis"])
+    r.add_argument("--retries", type=int, default=None)
+    r.add_argument("--no-cache", action="store_true")
     r.add_argument("--no-khronos", action="store_true")
     r.add_argument("--no-sheet", action="store_true")
+    r.add_argument("--fault-inject", dest="fault_inject", type=int, default=0,
+                   help="force the first N attempts to fail (demonstrates the retry loop)")
     args = p.parse_args(argv)
     if args.cmd == "run":
         return run(args)

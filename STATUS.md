@@ -33,7 +33,7 @@ is CPU-only and runs and gate-passes here.
 | 2 | Spider end-to-end (procedural Stage 3) | ✅ gate-passing | 10/10 checks; byte-deterministic; QA sheet rendered |
 | 3 | Godot integration layer | ✅ parse/lint · 🟣 in-engine pending | gdparse+gdlint clean; in-engine NOT self-certifiable — awaits a human in Godot 4.3+ |
 | 4 | TRELLIS.2 + Stages 2 & 4 | 🟠 AMD-only; ✅ fallback here | generative path implemented + guarded; off-target falls back to procedural and validates 10/10 (honest) |
-| 5 | Orchestrator (cache + iteration loop) | ⬜ | cold run validates, warm run cached, retry loop logs |
+| 5 | Orchestrator (cache + iteration loop) | ✅ gate-passing | cold validates; warm = cache hit (0.007s vs 1.55s); retry loop perturbs seed, recovers/exhausts w/ diagnosis; run manifest |
 | 6 | Quadruped archetype + docs | ⬜ | quadruped passes all 10 checks, solver/validator unchanged |
 | + | Run dashboard (web) | ⬜ | visualizes out/ artifacts |
 
