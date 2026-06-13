@@ -47,17 +47,17 @@ def run(args) -> int:
     seed = args.seed if args.seed is not None else cfg.get("default_seed", 1337)
     archetype = args.archetype or cfg.get("default_archetype", "arachnid")
     tier = _resolve_mesh_tier(args.mesh_tier or cfg.get("mesh_tier", "auto"))
-    if tier == "trellis":
-        print("mesh-tier: trellis (GPU) requested — see Milestone 4. Falling back to procedural here.")
-        tier = "procedural"
 
     print(f"Stage 1: compiling spec  prompt={prompt!r}  seed={seed}  archetype={archetype}")
     spec = compile_spec(prompt, seed, archetype)
 
     print(f"Stages 3/5/6/7: building asset (mesh_tier={tier}) ...")
     info = build_asset(spec, OUT, mesh_tier=tier)
+    if info.get("fallback_reason"):
+        print(f"  ! generative tier unavailable -> procedural fallback: {info['fallback_reason']}")
     print(f"  -> {info['glb'].name}  {info['bytes']} bytes  {info['triangles']} tris  "
-          f"{info['vertices']} verts  {info['joints']} joints  clips={info['clips']}")
+          f"{info['vertices']} verts  {info['joints']} joints  tier={info['mesh_tier']}  "
+          f"clips={info['clips']}")
 
     print("Stage 8: validating + measuring speeds ...")
     report = validate(info["glb"], write_back=True, khronos=not args.no_khronos)
